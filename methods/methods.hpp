@@ -14,7 +14,7 @@ namespace mm {
 
 /* Сюда нужно вставить объявление серверной части алгоритма. */
 int HeatEquationMethod(const nlohmann::json& input, nlohmann::json* output);
-//Возвращаем int(taskId), передаём JSON с инфой и место, куда записывать ответ 
+// Возвращаем int(taskId), передаём JSON с инфой и место, куда записывать ответ
 
 /* Конец вставки. */
 

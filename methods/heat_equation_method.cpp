@@ -21,7 +21,7 @@
 #include "tasks_queue.hpp"
 // для работы с очередью и получения taskId
 
-#include "methods.hpp" // БББ и отлов изменений синтаксиса
+#include "methods.hpp"  // БББ и отлов изменений синтаксиса
 
 extern mm::TasksQueue tasksQueue;
 // extern -- есть такая переменная, но в другом файле
@@ -32,7 +32,7 @@ extern mm::TasksQueue tasksQueue;
 static mm::HeatEquationSolver<double>::InitialFunc
 MakeInitial(const std::string& type, size_t M = 0) {
     if (type == "zero" || type.empty()) {
-        return nullptr;   // значение по умолчанию -- нуль
+        return nullptr;  // значение по умолчанию -- нуль
     }
     else if (type == "random") {
         // std::random_device -- источник случайных чисел
@@ -42,14 +42,12 @@ MakeInitial(const std::string& type, size_t M = 0) {
         // std::make_shared<T>(args) -- создает объект типа Т и возвращает
         // умный указатель std::shared_ptr<T>
         auto rng = std::make_shared<std::mt19937>(std::random_device{}());
-        
         // std::uniform_real_distribution<double> -- непрерывное равномерное
         // распределение на отрезке
         auto dist =
         std::make_shared<std::uniform_real_distribution<double>>(-5.0, 5.0);
         // возвращаем лямбда-функцию, забирающую эти мные указатели
         return [rng, dist](size_t, size_t) { return (*dist)(*rng); };
-        
         // Тут пришлось использовать сложные указатели, тк наши генераторы
         // должны жить и после функции, чтоб лямбла-функцию корректно отработала
     }
@@ -93,7 +91,7 @@ int mm::HeatEquationMethod(const nlohmann::json& input,
   auto initFunc = MakeInitial(initType, M);  // получаем нач фкнкцию
 
   auto* solver = new mm::HeatEquationSolver<double>(M, tau,
-  finishTime, exportPeriod, initFunc); // создаём объект-решалку
+  finishTime, exportPeriod, initFunc);  // создаём объект-решалку
 
   auto* wrapper = new mm::DoubleAbstractSolverWrapper(solver);
   // обертка для работы очереди над решалкой

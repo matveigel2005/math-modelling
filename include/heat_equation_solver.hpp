@@ -59,14 +59,13 @@ namespace mm {
  * @tparam T Тип данных для арифметики (float или double).
  */
 
-template<typename T> // Обобщающий шаблон(у нас double и float)
+template<typename T>  // Обобщающий шаблон(у нас double и float)
 
 class HeatEquationSolver : public AbstractSolver<T> {
 // Наш класс HeatEquationSolver наследует классу AbstractSolver<T>, где
 // модификатор public нужен, чтоб все публичные методы таковыми и остались
 
  public:
-
   /**
    * @brief Конструктор решателя.
    *
@@ -83,7 +82,6 @@ class HeatEquationSolver : public AbstractSolver<T> {
    * @param init Функция начального условия (i,j) -> T. По умолчанию nullptr,
    * что соответствует нулевой температуре внутри области.
    */
-
   using InitialFunc = std::function<T(size_t, size_t)>;
   // Создаём синоним для std::function<T(size_t, size_t)> для удобства
   // Это будет функция, которой мы задаём стартовое распределение температуры
@@ -92,7 +90,7 @@ class HeatEquationSolver : public AbstractSolver<T> {
   HeatEquationSolver(size_t M, T tau, T finishTime, T exportPeriod,
                      InitialFunc init = nullptr)
   // Поехали делать конструктор класса:
-  // M -- число разбиений на ед длины(h = 1/M), tau -- шаг по времени, 
+  // M -- число разбиений на ед длины(h = 1/M), tau -- шаг по времени,
   // finishTime -- конец времени моделирования,
   // exportPeriod -- типо частоты кадров, те как часто мы хотим записывать инфу,
   // init -- функция начального распределения, по умолчанию всё =0
@@ -111,7 +109,7 @@ class HeatEquationSolver : public AbstractSolver<T> {
   void ExportData(nlohmann::json* output) override;
   // Переопределяем виртуальные функции базового класса
 
- private: // приватные параметры
+ private:  // приватные параметры
   size_t M_;
   T h_;
   std::vector<T> u_;
@@ -120,26 +118,26 @@ class HeatEquationSolver : public AbstractSolver<T> {
 
   size_t Index(size_t i, size_t j) const {
     return i * (2 * M_ + 1) + j;
-  } // перевод записи в де координаты к работе с одномерными данными
+  }  // перевод записи в де координаты к работе с одномерными данными
 
   bool IsInside(size_t i, size_t j) const {
     return !(j > M_ && i > M_);
-  } // Проверка на принадлежность L-области
+  }  // Проверка на принадлежность L-области
 
-  bool IsDirichlet(size_t i, size_t j) const; // граница с Дирихле
-  bool IsNeumann(size_t i, size_t j) const; // граница с Нейманом
+  bool IsDirichlet(size_t i, size_t j) const;  // граница с Дирихле
+  bool IsNeumann(size_t i, size_t j) const;  // граница с Нейманом
 
 
-  T DirichletValue(size_t i, size_t j) const; // темп. там, где Дирихле
-  void InitializeArrays(); // функция-стартер
+  T DirichletValue(size_t i, size_t j) const;  // темп. там, где Дирихле
+  void InitializeArrays(); //  функция-стартер
 };
 
-template<typename T> // -||-
+template<typename T>  // -||-
 // Реализация метода InitializeArrays для нашего класса
 void HeatEquationSolver<T>::InitializeArrays() {
-  size_t N = 2 * M_ + 1; // к-во узлов сетки в каждую сторону
-  for (size_t i = 0; i < N; ++i) {// y = i * h
-    for (size_t j = 0; j < N; ++j) {// x = j * h
+  size_t N = 2 * M_ + 1; //  к-во узлов сетки в каждую сторону
+  for (size_t i = 0; i < N; ++i) {//  y = i * h
+    for (size_t j = 0; j < N; ++j) {//  x = j * h
       if (!IsInside(i, j)) continue;
       T value = 0;
       if (IsDirichlet(i, j)) {
@@ -155,23 +153,23 @@ void HeatEquationSolver<T>::InitializeArrays() {
 
 template<typename T>
 bool HeatEquationSolver<T>::IsDirichlet(size_t i, size_t j) const {
-  if (i == 2 * M_ && j <= M_) return true; // (0,2)-(1,2)
-  if (j == M_ && i >= M_ && i <= 2 * M_) return true; // (1,1)-(1,2)
-  if (i == 0) return true; // (0,0)-(2,0)
-  if (j == 2 * M_ && i <= M_) return true; // (2,0)-(2,1)
+  if (i == 2 * M_ && j <= M_) return true;  // (0,2)-(1,2)
+  if (j == M_ && i >= M_ && i <= 2 * M_) return true;  // (1,1)-(1,2)
+  if (i == 0) return true;  // (0,0)-(2,0)
+  if (j == 2 * M_ && i <= M_) return true;  // (2,0)-(2,1)
   return false;
 }
 
 template<typename T>
 bool HeatEquationSolver<T>::IsNeumann(size_t i, size_t j) const {
-  if (j == 0 && i > 0 && i < 2 * M_) return true; // (0,0+)-(0,2-)
-  if (i == M_ && j > M_ && j < 2 * M_) return true; // (1,1+)-(1,2-)
+  if (j == 0 && i > 0 && i < 2 * M_) return true;  // (0,0+)-(0,2-)
+  if (i == M_ && j > M_ && j < 2 * M_) return true;  // (1,1+)-(1,2-)
   return false;
 }
 
 template<typename T>
 T HeatEquationSolver<T>::DirichletValue(size_t i, size_t j) const {
-  T fy = static_cast<T>(i) / static_cast<T>(M_); // коорд y
+  T fy = static_cast<T>(i) / static_cast<T>(M_);  // коорд y
   if (i == 2 * M_ && j <= M_) return 2;
   if (j == M_ && i >= M_ && i <= 2 * M_) return 4 - fy;
   if (i == 0) return 1;
@@ -201,7 +199,7 @@ T HeatEquationSolver<T>::DirichletValue(size_t i, size_t j) const {
 template<typename T>
 bool HeatEquationSolver<T>::MakeStep() {
   T h2 = h_ * h_;
-  T tau = this->tau; // берём из базового класса
+  T tau = this->tau;  // берём из базового класса
   T coeff = tau / h2;
   size_t N = 2 * M_ + 1;
 
@@ -217,11 +215,11 @@ bool HeatEquationSolver<T>::MakeStep() {
   size_t rows_per_thread = (N + nthreads - 1) / nthreads;
   // сколько строк на поток с округлением вверх
 
-  for (unsigned int t = 0; t < nthreads; ++t) {// цикл по потокам
-    size_t start = t * rows_per_thread;// начальный индекс строки для потока
-    if (start >= N) break;// дошли до конца, выходим
-    size_t end = start + rows_per_thread;// конечный индекс
-    if (end > N) end = N;// для почледнего потока, чтоб не ушёл за массив
+  for (unsigned int t = 0; t < nthreads; ++t) {  // цикл по потокам
+    size_t start = t * rows_per_thread;  // начальный индекс строки для потока
+    if (start >= N) break;  // дошли до конца, выходим
+    size_t end = start + rows_per_thread;  // конечный индекс
+    if (end > N) end = N;  // для почледнего потока, чтоб не ушёл за массив
 
     futures.push_back(std::async(std::launch::async,
       [this, start, end, coeff, N]() {
@@ -234,11 +232,10 @@ bool HeatEquationSolver<T>::MakeStep() {
             u_next_[idx] = u_ij + coeff * (
                 u_[Index(i - 1, j)] + u_[Index(i + 1, j)] +
                 u_[Index(i, j - 1)] + u_[Index(i, j + 1)] -
-                4 * u_ij); // аппроксимативная формула для lap(u)=du/dt
+                4 * u_ij);  // аппроксимативная формула для lap(u)=du/dt
           }
         }
-      }
-    ));
+      }));
     // Запускаем ассинхроную задачу через std::async
     // std::launch::async -- гарантированный немедленный запуск в от дельном
     // потоке
@@ -292,23 +289,22 @@ void HeatEquationSolver<T>::ExportData(nlohmann::json* output) {
   nlohmann::json grid = nlohmann::json::array();
   // создаем JSON-массив с именем grid -- вся наша сетка
 
-  for (size_t i = 0; i < N; ++i) {// цикл по строкам
-    nlohmann::json row = nlohmann::json::array();// JSON-массив для строк
-    for (size_t j = 0; j < N; ++j) {// цикл по столбцам
+  for (size_t i = 0; i < N; ++i) {  // цикл по строкам
+    nlohmann::json row = nlohmann::json::array();  // JSON-массив для строк
+    for (size_t j = 0; j < N; ++j) {  // цикл по столбцам
       if (IsInside(i, j))
         row.push_back(u_[Index(i, j)]);
       else
-        row.push_back(nullptr);// внешник точки, станут null в JSON
+        row.push_back(nullptr);  // внешник точки, станут null в JSON
     }
     grid.push_back(row);
   }
-  (*output)["grid"] = grid; 
+  (*output)["grid"] = grid;
   // разыменованный указатель на объект nlohmann::json, образаемся по ключу
   // "grid"(такого нет -- значит создаём сначала) и присваиваем содержимое grid
 }
 
-}  
+}
 // закрываем пространство имён namespace mm
 
-#endif
-// Закончили определять макрос INCLUDE_HEAT_EQUATION_SOLVER_HPP_
+#endif  // Закончили определять макрос INCLUDE_HEAT_EQUATION_SOLVER_HPP_

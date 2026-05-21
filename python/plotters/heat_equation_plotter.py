@@ -1,19 +1,7 @@
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-# были проблемы с областью видимости родительского файла, так что я решил
-# их вот так исправить, просто ища его по известному адресу
-
-import numpy as np
-# для мат вычислений и тд
-
-import matplotlib.pyplot as plt
-# для отрисовки данных на холст
-
-import matplotlib.animation as animation
-# для создания мультиков
-
-from abstract_plotter import AbstractPlotter
-# класс, от которого наследуемся
+import numpy as np # для мат вычислений и тд
+import matplotlib.pyplot as plt # для отрисовки данных на холст
+import matplotlib.animation as animation # для создания мультиков
+from abstract_plotter import AbstractPlotter # класс, от которого наследуемся
 
 
 class HeatEquationPlotter(AbstractPlotter): # наш визуализатор

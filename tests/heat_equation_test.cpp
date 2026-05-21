@@ -31,8 +31,8 @@ static void TestBoundaryConditions() {
   mm::HeatEquationSolver<double> solver(M, tau, finishTime, tau);
   // делаем решалку
   nlohmann::json result;
-  bool ok = solver.Solve(&result); // запускаем решалку
-  REQUIRE(ok); // проверка, чем закончилось
+  bool ok = solver.Solve(&result);  // запускаем решалку
+  REQUIRE(ok);  // проверка, чем закончилось
 
   auto grid = result["data"][0]["data"]["grid"];
   // вытаскиваем первый временной слой
@@ -46,7 +46,7 @@ static void TestBoundaryConditions() {
   REQUIRE_CLOSE(grid[i_half][2 * M].get<double>(), 1.5, 1e-10);
 }
 
-static void TestStability() {// отсутствие NaN или Inf
+static void TestStability() {  // отсутствие NaN или Inf
   const size_t M = 8;
   const double h = 1.0 / M;
   const double tau = h * h / 4.0;
@@ -57,21 +57,21 @@ static void TestStability() {// отсутствие NaN или Inf
   bool ok = solver.Solve(&result);
   REQUIRE(ok);
 
-  for (auto& frame : result["data"]) {// цикл по слоям
-    auto grid = frame["data"]["grid"];// берем сетку из кадра
-    for (auto& row : grid) {// по строкам
-      for (auto& val : row) {// по элементам строк
-        if (!val.is_null()) {// не null, те внутри сетки
+  for (auto& frame : result["data"]) {  // цикл по слоям
+    auto grid = frame["data"]["grid"];  // берем сетку из кадра
+    for (auto& row : grid) {  // по строкам
+      for (auto& val : row) {  // по элементам строк
+        if (!val.is_null()) {  // не null, те внутри сетки
           double v = val.get<double>();
-          REQUIRE(!std::isnan(v));// не Nan
-          REQUIRE(!std::isinf(v));// не Inf
+          REQUIRE(!std::isnan(v));  // не Nan
+          REQUIRE(!std::isinf(v));  // не Inf
         }
       }
     }
   }
 }
 
-static void TestMaximumPrinciple() {// принцип максимума
+static void TestMaximumPrinciple() {  // принцип максимума
   const size_t M = 6;
   const double h = 1.0 / M;
   const double tau = h * h / 4.0;
@@ -99,7 +99,7 @@ static void TestMaximumPrinciple() {// принцип максимума
   REQUIRE(min_val >= 0.0 - 1e-10);
 }
 
-static void TestRandomInitial() {// тест со случйной температурой
+static void TestRandomInitial() {  // тест со случйной температурой
   const size_t M = 8;
   const double h = 1.0 / M;
   const double tau = h * h / 4.0;
@@ -113,10 +113,10 @@ static void TestRandomInitial() {// тест со случйной темпер�
 
   auto init_func = [&](size_t, size_t) {
     return dist(rng);
-  };// лямбда-функция для удобства
+  };  // лямбда-функция для удобства
 
   mm::HeatEquationSolver<double> solver(M, tau, finishTime,
-  finishTime, init_func);// решалка со случайной стартовой температурой
+  finishTime, init_func);  // решалка со случайной стартовой температурой
   nlohmann::json result;
   bool ok = solver.Solve(&result);
   REQUIRE(ok);
@@ -143,8 +143,8 @@ static void TestRandomInitial() {// тест со случйной темпер�
  * запускает все проверки.
  */
 
-void TestHeatEquation() {// главная тестовая функция
-  TestSuite suite("Heat Equation");// объект suite класса TestSuite,
+void TestHeatEquation() { // главная тестовая функция
+  TestSuite suite("Heat Equation");  // объект suite класса TestSuite,
   // который вкурсе, как наш набор тестов называется
   RUN_TEST(suite, TestBoundaryConditions);
   RUN_TEST(suite, TestStability);
