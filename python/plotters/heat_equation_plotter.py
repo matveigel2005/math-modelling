@@ -58,7 +58,7 @@ class HeatEquationPlotter(AbstractPlotter):  # наш визуализатор
             nonlocal cbar  # берём общую шкалу
             ax.clear()  # очищаем холст
             cont = ax.contourf(X, Y, grids[i], levels=30, cmap='hot',
-            vmin=vmin, vmax=vmax)
+                               vmin=vmin, vmax=vmax)
             # заполняем контуры по данным кадры
             if cbar is None:
                 cbar = plt.colorbar(cont, ax=ax, label='u')
@@ -75,7 +75,8 @@ class HeatEquationPlotter(AbstractPlotter):  # наш визуализатор
             return cont,
 
         ani = animation.FuncAnimation(fig, animate, frames=len(grids),
-        interval=200, blit=False)  # сделали объект-аниматор
+                                      interval=200, blit=False)
+        # сделали объект-аниматор
         ani.save(self.output_path, writer='ffmpeg', fps=5)
         # сохранили итог анимации по пути, создавая видеофайл с 5 фпс
         plt.close(fig)  # выкинули холст, почистили память
