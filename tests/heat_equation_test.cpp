@@ -9,19 +9,19 @@
  */
 
 #include <cmath>
-//для стандартных функций
+// для стандартных функций
 
 #include <random>
-//для теста со случайной температурой
+// для теста со случайной температурой
 
 #include <nlohmann/json.hpp>
 
 #include "heat_equation_solver.hpp"
 
 #include "test_core.hpp"
-//создание и проверка тестов
+// создание и проверка тестов
 
-//тест на условия Дирихле на границе
+// тест на условия Дирихле на границе
 static void TestBoundaryConditions() {
   const size_t M = 10;
   const double h = 1.0 / M;
@@ -29,14 +29,14 @@ static void TestBoundaryConditions() {
   const double finishTime = tau;
 
   mm::HeatEquationSolver<double> solver(M, tau, finishTime, tau);
-  //делаем решалку
+  // делаем решалку
   nlohmann::json result;
-  bool ok = solver.Solve(&result); //запускаем решалку
-  REQUIRE(ok); //проверка, чем закончилось
+  bool ok = solver.Solve(&result); // запускаем решалку
+  REQUIRE(ok); // проверка, чем закончилось
 
   auto grid = result["data"][0]["data"]["grid"];
-  //вытаскиваем первый временной слой
-  //и проверяем, что у нас вышло с условиями Дирихле в разных местах
+  // вытаскиваем первый временной слой
+  // и проверяем, что у нас вышло с условиями Дирихле в разных местах
   REQUIRE_CLOSE(grid[0][0].get<double>(), 1.0, 1e-10);
   REQUIRE_CLOSE(grid[0][2 * M].get<double>(), 1.0, 1e-10);
   REQUIRE_CLOSE(grid[2 * M][0].get<double>(), 2.0, 1e-10);
@@ -46,7 +46,7 @@ static void TestBoundaryConditions() {
   REQUIRE_CLOSE(grid[i_half][2 * M].get<double>(), 1.5, 1e-10);
 }
 
-static void TestStability() {//отсутствие NaN или Inf
+static void TestStability() {// отсутствие NaN или Inf
   const size_t M = 8;
   const double h = 1.0 / M;
   const double tau = h * h / 4.0;
@@ -57,21 +57,21 @@ static void TestStability() {//отсутствие NaN или Inf
   bool ok = solver.Solve(&result);
   REQUIRE(ok);
 
-  for (auto& frame : result["data"]) {//цикл по слоям
-    auto grid = frame["data"]["grid"];//берем сетку из кадра
-    for (auto& row : grid) {//по строкам
-      for (auto& val : row) {//по элементам строк
-        if (!val.is_null()) {//не null, те внутри сетки
+  for (auto& frame : result["data"]) {// цикл по слоям
+    auto grid = frame["data"]["grid"];// берем сетку из кадра
+    for (auto& row : grid) {// по строкам
+      for (auto& val : row) {// по элементам строк
+        if (!val.is_null()) {// не null, те внутри сетки
           double v = val.get<double>();
-          REQUIRE(!std::isnan(v));//не Nan
-          REQUIRE(!std::isinf(v));//не Inf
+          REQUIRE(!std::isnan(v));// не Nan
+          REQUIRE(!std::isinf(v));// не Inf
         }
       }
     }
   }
 }
 
-static void TestMaximumPrinciple() {//принцип максимума
+static void TestMaximumPrinciple() {// принцип максимума
   const size_t M = 6;
   const double h = 1.0 / M;
   const double tau = h * h / 4.0;
@@ -99,24 +99,24 @@ static void TestMaximumPrinciple() {//принцип максимума
   REQUIRE(min_val >= 0.0 - 1e-10);
 }
 
-static void TestRandomInitial() {//тест со случйной температурой
+static void TestRandomInitial() {// тест со случйной температурой
   const size_t M = 8;
   const double h = 1.0 / M;
   const double tau = h * h / 4.0;
   const double finishTime = 0.05;
 
   std::mt19937 rng(19042005);
-  //генератор псевдослучайных чисел, который каждый раз будет выдавать
-  //одни и те же числа, чтоб можно было понять, а с чего у нас что-то упало
+  // генератор псевдослучайных чисел, который каждый раз будет выдавать
+  // одни и те же числа, чтоб можно было понять, а с чего у нас что-то упало
   std::uniform_real_distribution<double> dist(-5.0, 5.0);
-  //равномерная генерация от -5.0 до 5.0
+  // равномерная генерация от -5.0 до 5.0
 
   auto init_func = [&](size_t, size_t) {
     return dist(rng);
-  };//лямбда-функция для удобства
+  };// лямбда-функция для удобства
 
   mm::HeatEquationSolver<double> solver(M, tau, finishTime,
-  finishTime, init_func);//решалка со случайной стартовой температурой
+  finishTime, init_func);// решалка со случайной стартовой температурой
   nlohmann::json result;
   bool ok = solver.Solve(&result);
   REQUIRE(ok);
@@ -143,9 +143,9 @@ static void TestRandomInitial() {//тест со случйной темпера
  * запускает все проверки.
  */
 
-void TestHeatEquation() {//главная тестовая функция
-  TestSuite suite("Heat Equation");//объект suite класса TestSuite,
-  //который вкурсе, как наш набор тестов называется
+void TestHeatEquation() {// главная тестовая функция
+  TestSuite suite("Heat Equation");// объект suite класса TestSuite,
+  // который вкурсе, как наш набор тестов называется
   RUN_TEST(suite, TestBoundaryConditions);
   RUN_TEST(suite, TestStability);
   RUN_TEST(suite, TestMaximumPrinciple);
