@@ -143,7 +143,7 @@ static void TestRandomInitial() {  // тест со случйной темпе�
  * запускает все проверки.
  */
 
-void TestHeatEquation() { // главная тестовая функция
+void TestHeatEquation() {  // главная тестовая функция
   TestSuite suite("Heat Equation");  // объект suite класса TestSuite,
   // который вкурсе, как наш набор тестов называется
   RUN_TEST(suite, TestBoundaryConditions);

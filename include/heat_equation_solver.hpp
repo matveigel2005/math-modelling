@@ -129,15 +129,15 @@ class HeatEquationSolver : public AbstractSolver<T> {
 
 
   T DirichletValue(size_t i, size_t j) const;  // темп. там, где Дирихле
-  void InitializeArrays(); //  функция-стартер
+  void InitializeArrays();  //  функция-стартер
 };
 
 template<typename T>  // -||-
 // Реализация метода InitializeArrays для нашего класса
 void HeatEquationSolver<T>::InitializeArrays() {
-  size_t N = 2 * M_ + 1; //  к-во узлов сетки в каждую сторону
-  for (size_t i = 0; i < N; ++i) {//  y = i * h
-    for (size_t j = 0; j < N; ++j) {//  x = j * h
+  size_t N = 2 * M_ + 1;  //  к-во узлов сетки в каждую сторону
+  for (size_t i = 0; i < N; ++i) {  //  y = i * h
+    for (size_t j = 0; j < N; ++j) {  //  x = j * h
       if (!IsInside(i, j)) continue;
       T value = 0;
       if (IsDirichlet(i, j)) {
@@ -304,7 +304,7 @@ void HeatEquationSolver<T>::ExportData(nlohmann::json* output) {
   // "grid"(такого нет -- значит создаём сначала) и присваиваем содержимое grid
 }
 
-}
+}  // namespace mm
 // закрываем пространство имён namespace mm
 
-#endif  // Закончили определять макрос INCLUDE_HEAT_EQUATION_SOLVER_HPP_
+#endif  // INCLUDE_HEAT_EQUATION_SOLVER_HPP_

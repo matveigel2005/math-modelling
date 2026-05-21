@@ -1,6 +1,3 @@
-#include <nlohmann/json.hpp>
-// работа с JSON-файлами
-
 #include <random>
 // для генерации случайных чисел в начальном распределении
 
@@ -9,6 +6,9 @@
 
 #include <cmath>
 // математ функции для начального условия
+
+#include <nlohmann/json.hpp>
+// работа с JSON-файлами
 
 #include "abstract_solver_wrapper.hpp"
 // Для использования классов-обёрток FloatAbstractSolverWrapper
@@ -33,8 +33,7 @@ static mm::HeatEquationSolver<double>::InitialFunc
 MakeInitial(const std::string& type, size_t M = 0) {
     if (type == "zero" || type.empty()) {
         return nullptr;  // значение по умолчанию -- нуль
-    }
-    else if (type == "random") {
+    } else if (type == "random") {
         // std::random_device -- источник случайных чисел
         // {} дают временный объект класса, () возвращает случайное число
         // Его мы спользуем как определяющее для нашего генератора
@@ -50,8 +49,7 @@ MakeInitial(const std::string& type, size_t M = 0) {
         return [rng, dist](size_t, size_t) { return (*dist)(*rng); };
         // Тут пришлось использовать сложные указатели, тк наши генераторы
         // должны жить и после функции, чтоб лямбла-функцию корректно отработала
-    }
-    else if (type == "sin") {
+    } else if (type == "sin") {
         if (M == 0) {
             // без знания размеров сетки вернём нули
             return nullptr;
@@ -61,7 +59,7 @@ MakeInitial(const std::string& type, size_t M = 0) {
             double y = static_cast<double>(i) / static_cast<double>(M);
             const double pi = std::acos(-1.0);
             return std::sin(pi * x) * std::sin(pi * y);
-        }; // иначе нормальную функцию с синусами
+        };  // иначе нормальную функцию с синусами
     }
     // неизвестный тип -- по умолчанию
     return nullptr;
