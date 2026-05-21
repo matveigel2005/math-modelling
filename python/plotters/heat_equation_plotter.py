@@ -1,7 +1,14 @@
-import numpy as np  # для мат вычислений и тд
-import matplotlib.pyplot as plt  # для отрисовки данных на холст
-import matplotlib.animation as animation  # для создания мультиков
-from abstract_plotter import AbstractPlotter  # класс, от которого наследуемся
+import numpy as np
+# для мат вычислений и тд
+
+import matplotlib.pyplot as plt
+# для отрисовки данных на холст
+
+import matplotlib.animation as animation
+# для создания мультиков
+
+from abstract_plotter import AbstractPlotter
+# класс, от которого наследуемся
 
 
 class HeatEquationPlotter(AbstractPlotter):  # наш визуализатор
@@ -11,11 +18,14 @@ class HeatEquationPlotter(AbstractPlotter):  # наш визуализатор
         if not frames:
             return
 
-        sample = frames[0]["data"]["grid"]  # сетка значений из 1-го кадра
+        sample = frames[0]["data"]["grid"]
+        # сетка значений из 1-го кадра
         N = len(sample)  # размер сетки
-        x = np.linspace(0, 2, N)  # массив на N точек равномерно от 0 до 2
+        x = np.linspace(0, 2, N)
+        # массив на N точек равномерно от 0 до 2
         y = np.linspace(0, 2, N)
-        X, Y = np.meshgrid(x, y)  # делаем двумерные матрицы с координатами узлов
+        X, Y = np.meshgrid(x, y)
+        # делаем двумерные матрицы с координатами узлов
 
         grids = []  # массив для температуры в кадре
         times = []  # массив для соответствующих времен
