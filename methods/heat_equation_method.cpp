@@ -73,6 +73,7 @@ MakeInitial(const std::string& type, size_t M = 0) {
  * @param input Входной JSON с параметрами M, tau, finishTime, exportPeriod
  * и опционально initial.
  * @param output Выходной JSON, в который записывается id задачи.
+ * @param tasksQueue Ссылка на очередь задач для добавления расчета.
  * @return Идентификатор созданной задачи.
  */
 
