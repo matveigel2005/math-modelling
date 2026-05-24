@@ -14,6 +14,15 @@
 #include <random>
 // для теста со случайной температурой
 
+// делаем сетевой тест
+#include <thread>
+// чтоб делать паузу между запросами. Можно и нет,
+// но вроде так получше делать
+#include <chrono>
+// чтоб задать длительность паузы в миллисекундах
+#include <httplib.h>
+// для отправки запросов серверу
+
 #include <nlohmann/json.hpp>
 
 #include "heat_equation_solver.hpp"
@@ -136,6 +145,66 @@ static void TestRandomInitial() {  // тест со случйной темпе�
   }
 }
 
+static void TestHttpWorkflow() {  // добавляем сетевой тест
+    using namespace httplib;  // для удобства
+    Client cli("http://localhost:8080");
+    // создаем объект HTTP-клиента, который будет обращаться
+    // к серверу по адресу localhost на порт 8080
+
+    // отправляем POST-запрос на маршрут /CheckTaskStatu с пустым
+    // телом и HTTP-заголовком application/json
+    auto chk = cli.Post("/CheckTaskStatus", "{}", "application/json");
+    if (!chk) {  //проверяем, есть ли ответ от сервера
+        std::cerr << "Skipping HTTP test (server not reachable)\n";
+        return;
+    }
+
+    nlohmann::json req;  //JSON-объект для тела запроса
+    // дальше остальные параметры
+    req["M"] = 10;
+    req["tau"] = 0.01;
+    req["finishTime"] = 0.02;
+    req["exportPeriod"] = 0.02;
+
+    // тут вроде ясно, смысл тот же, но телоне пустое, а с нашими
+    // данными, которые писали выше
+    auto post = cli.Post("/HeatEquation", req.dump(), "application/json");
+    REQUIRE(post != nullptr);  // есть ответ от сервера
+    REQUIRE(post->status == 200);  // проверяем, что задача принята
+
+    auto json = nlohmann::json::parse(post->body);
+    // собираем ответ в json-ку
+    REQUIRE(json.contains("id"));
+    int task_id = json["id"];  // получили id, если есть
+
+    for (int i = 0; i < 100; ++i) {
+        auto st = cli.Post("/CheckTaskStatus",
+                           nlohmann::json{{"id", task_id}}.dump(),
+                           "application/json");
+        // отправляем запрос для проверки статуса задачи с нашей id
+        REQUIRE(st != nullptr);  // проверяем, что ответ есть
+        auto st_json = nlohmann::json::parse(st->body);
+        // собираем ответ в формат json
+        if (st_json.value("status", "") == "finished") break;
+        // если задачу завершили, то ок, на выход
+        // подождём, чтоб не бить по серверу постоянными запросами
+        // и не промотать быстро весь наш цикл на проверку
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // опять качаем данные
+    auto down = cli.Post("/DownloadTaskData",
+                         nlohmann::json{{"id", task_id}}.dump(),
+                         "application/json");
+    REQUIRE(down != nullptr);
+    auto result = nlohmann::json::parse(down->body);
+    //и дальшепроверяем, что реально получаем то, что надо по уму
+    REQUIRE(result.contains("data"));
+    REQUIRE(!result["data"].empty());
+    REQUIRE(result["data"][0]["data"].contains("grid"));
+}
+
+
 /**
  * @brief Главная тестовая функция.
  *
@@ -150,4 +219,5 @@ void TestHeatEquation() {  // главная тестовая функция
   RUN_TEST(suite, TestStability);
   RUN_TEST(suite, TestMaximumPrinciple);
   RUN_TEST(suite, TestRandomInitial);
+  RUN_TEST(suite, TestHttpWorkflow);
 }

@@ -1,5 +1,5 @@
 import sys
-from plotters.heat_equation_plotter import HeatEquationPlotter
+from heat_equation_plotter import HeatEquationPlotter
 
 if __name__ == '__main__':
 

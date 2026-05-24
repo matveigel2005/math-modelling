@@ -15,7 +15,7 @@
 
 using json = nlohmann::json;
 
-mm::TasksQueue tasksQueue;
+//mm::TasksQueue tasksQueue;
 // Делаю глобальной переменной, чтоб HeatEquationMethod
 // имел доступ к очереди задач
 
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 
   httplib::Server svr;
 
-  // mm::TasksQueue tasksQueue;
+  mm::TasksQueue tasksQueue;
 
   // Обработчик для GET запроса по адресу /stop. Этот обработчик
   // останавливает сервер.
@@ -116,7 +116,8 @@ int main(int argc, char* argv[]) {
   httplib::Response& res) {
     nlohmann::json input = nlohmann::json::parse(req.body);
     nlohmann::json output;
-    int taskId = mm::HeatEquationMethod(input, &output);
+    int taskId = mm::HeatEquationMethod(input, &output,
+                                        tasksQueue);
     output["id"] = taskId;
     res.set_content(output.dump(), "application/json");
   });

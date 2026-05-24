@@ -26,7 +26,7 @@
 
 #include "methods.hpp"  // БББ и отлов изменений синтаксиса
 
-extern mm::TasksQueue tasksQueue;
+//extern mm::TasksQueue tasksQueue;
 // extern -- есть такая переменная, но в другом файле
 // mm::TasksQueue -- пространство имён и реализующийся класс
 // tasksQueue -- имя той самой внешней переменной
@@ -78,7 +78,8 @@ MakeInitial(const std::string& type, size_t M = 0) {
 
 // Объявление нашей функции из пространства имён mm
 int mm::HeatEquationMethod(const nlohmann::json& input,
-                           nlohmann::json* output) {
+                           nlohmann::json* output,
+                           mm::TasksQueue& tasksQueue) {
   // at -- обращение к JSON файлу и поиск данных по ключу
   // Иначе std::out_of_range, если такого нет
   size_t M = input.at("M").get<size_t>();

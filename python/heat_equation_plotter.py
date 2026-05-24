@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 # для создания мультиков
 
-from abstract_plotter import AbstractPlotter
+from plotters.abstract_plotter import AbstractPlotter
 # класс, от которого наследуемся
 
 
